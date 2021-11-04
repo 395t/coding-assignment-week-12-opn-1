@@ -26,6 +26,7 @@ model_names = sorted(name for name in models.__dict__
 
 parser = argparse.ArgumentParser(description='PyTorch Finetuning of SimCLR Checkpoints')
 parser.add_argument('-a', '--arch', default='resnet50-1x')
+parser.add_argument('-e', '--epochs', default=20, type=int)
 parser.add_argument('-d', '--dataset', choices=('CIFAR-10', 'CIFAR-100', 'STL-10'), default='CIFAR-10')
 parser.add_argument('-j', '--workers', default=8, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
@@ -69,11 +70,57 @@ def main():
     # cudnn.benchmark = True
 
     # Data loading code
-    _, val_loader = get_dataloader(args.dataset, args.batch_size, DATA_DIR)
+    train_loader, val_loader = get_dataloader(args.dataset, args.batch_size, DATA_DIR)
+
+    for i in range(args.epochs):
+        print(f'---- Epoch {i + 1} Training ----')
+        train(train_loader, model, criterion, args)
+        print(f'---- Epoch {i + 1} Validation ----')
+        validate(val_loader, model, criterion, args)
 
 
-    validate(val_loader, model, criterion, args)
+def train(train_loader, model, criterion, args):
+    batch_time = AverageMeter('Time', ':6.3f')
+    losses = AverageMeter('Loss', ':.4e')
+    top1 = AverageMeter('Acc@1', ':6.2f')
+    top5 = AverageMeter('Acc@5', ':6.2f')
+    progress = ProgressMeter(
+        len(train_loader),
+        [batch_time, losses, top1, top5],
+        prefix='Train: ')
 
+    # switch to evaluate mode
+    model.train()
+    optim = torch.optim.Adam(model.parameters())
+
+    end = time.time()
+    for i, (images, target) in enumerate(train_loader):
+        optim.zero_grad()
+        # target = target.to('cuda')
+
+        # compute output
+        output = model(images)
+        loss = criterion(output, target)
+        loss.backward()
+        optim.step()
+
+        # measure accuracy and record loss
+        acc1, acc5 = accuracy(output, target, topk=(1, 5))
+        losses.update(loss.item(), images.size(0))
+        top1.update(acc1[0], images.size(0))
+        top5.update(acc5[0], images.size(0))
+
+        # measure elapsed time
+        batch_time.update(time.time() - end)
+        end = time.time()
+
+        if i % args.print_freq == 0:
+            progress.display(i)
+
+        print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
+              .format(top1=top1, top5=top5))
+
+    return top1.avg
 
 def validate(val_loader, model, criterion, args):
     batch_time = AverageMeter('Time', ':6.3f')
