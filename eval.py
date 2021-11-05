@@ -19,6 +19,8 @@ import src
 from src.paths import CHECKPOINTS_DIR, DATA_DIR
 from src.dataloader import get_dataloader
 from src.resnet_wider import resnet50x1, resnet50x2, resnet50x4
+from src.lifecycles import get_device, save_stats, load_stats, save_model, load_model
+from src.viz_helper import compare_training_stats, save_plt
 
 model_names = sorted(name for name in models.__dict__
                      if name.islower() and not name.startswith("__")
@@ -27,6 +29,7 @@ model_names = sorted(name for name in models.__dict__
 parser = argparse.ArgumentParser(description='PyTorch Finetuning of SimCLR Checkpoints')
 parser.add_argument('-a', '--arch', default='resnet50-1x')
 parser.add_argument('-e', '--epochs', default=20, type=int)
+parser.add_argument('--exp-name', default='default')
 parser.add_argument('-d', '--dataset', choices=('CIFAR-10', 'CIFAR-100', 'STL-10'), default='CIFAR-10')
 parser.add_argument('-j', '--workers', default=8, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
@@ -61,23 +64,76 @@ def main():
     num_classes = int(args.dataset.split('-')[-1])
     model.fc = nn.Linear(model.fc.weight.shape[-1], num_classes)
 
-    # TODO: uncomment on colab
-    # model = torch.nn.DataParallel(model).to('cuda')
+
+    if torch.cuda.is_available():
+        model = torch.nn.DataParallel(model).to('cuda')
+        cudnn.benchmark = True
 
     # define loss function (criterion) and optimizer
     criterion = nn.CrossEntropyLoss()
 
-    # cudnn.benchmark = True
 
     # Data loading code
     train_loader, val_loader = get_dataloader(args.dataset, args.batch_size, DATA_DIR)
 
+    train_metrics = {}
+    val_metrics = {}
     for i in range(args.epochs):
         print(f'---- Epoch {i + 1} Training ----')
-        train(train_loader, model, criterion, args)
+        train_epoch_metrics = {}
+        val_epoch_metrics = {}
+        top1, top5 = train(train_loader, model, criterion, args)
+        train_epoch_metrics['top1_acc'] = top1.item()
+        train_epoch_metrics['top5_acc'] = top5.item()
         print(f'---- Epoch {i + 1} Validation ----')
-        validate(val_loader, model, criterion, args)
+        top1, top5 = validate(val_loader, model, criterion, args)
+        val_epoch_metrics['top1_acc'] = top1.item()
+        val_epoch_metrics['top5_acc'] = top5.item()
 
+        # update aggregate metrics
+        train_metrics[f'epoch_{i + 1}'] = train_epoch_metrics
+        val_metrics[f'epoch_{i + 1}'] = val_epoch_metrics
+
+    save_path = f'{args.dataset}_{args.exp_name}_train_metrics'
+    save_stats(train_metrics, save_path)
+
+    save_path = f'{args.dataset}_{args.exp_name}_val_metrics'
+    save_stats(val_metrics, save_path)
+
+    # Models have run, lets plot the stats
+    all_stats = []
+    labels = []
+    load_path = f'{args.dataset}_{args.exp_name}_train_metrics'
+    all_stats.append(load_stats(load_path))
+    labels.append(f'{args.exp_name}')
+
+    for metric in ('top1_acc', 'top5_acc'):
+        # For every config, plot the loss across number of epochs
+        plt = compare_training_stats(all_stats, labels, metric_to_compare=metric, y_label=metric, title=f'{metric} vs Epoch (Train)')
+        save_plt(plt, f'{args.dataset}_{args.exp_name}_{metric}_train')
+        plt.clf()
+
+    # plt validation stats
+    all_stats = []
+    labels = []
+    load_path = f'{args.dataset}_{args.exp_name}_val_metrics'
+    all_stats.append(load_stats(load_path))
+    labels.append(f'{args.exp_name}')
+
+    for metric in ('top1_acc', 'top5_acc'):
+        # For every config, plot the loss across number of epochs
+        plt = compare_training_stats(all_stats, labels, metric_to_compare=metric, y_label=metric, title=f'{metric} vs Epoch (Validation)')
+        save_plt(plt, f'{args.dataset}_{args.exp_name}_{metric}_val')
+        plt.clf()
+
+    # aggregate final epoch test accuracies across experiments and save
+    test_acc = {}
+    load_path = f'{args.dataset}_{args.exp_name}_val_metrics'
+    stats = load_stats(load_path)
+    exp = f'{args.dataset}_{args.exp_name}'
+    for metric in ('top1_acc', 'top5_acc'):
+        test_acc[f'{exp}_{metric}'] = stats[f'epoch_{args.epochs}'][metric]
+    save_stats(test_acc, f'{args.dataset}_{args.exp_name}_test_acc')
 
 def train(train_loader, model, criterion, args):
     batch_time = AverageMeter('Time', ':6.3f')
@@ -90,13 +146,14 @@ def train(train_loader, model, criterion, args):
         prefix='Train: ')
 
     # switch to evaluate mode
+    device = get_device()
     model.train()
     optim = torch.optim.Adam(model.parameters())
 
     end = time.time()
     for i, (images, target) in enumerate(train_loader):
         optim.zero_grad()
-        # target = target.to('cuda')
+        target = target.to(device)
 
         # compute output
         output = model(images)
@@ -120,7 +177,7 @@ def train(train_loader, model, criterion, args):
         print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
               .format(top1=top1, top5=top5))
 
-    return top1.avg
+    return top1.avg, top5.avg
 
 def validate(val_loader, model, criterion, args):
     batch_time = AverageMeter('Time', ':6.3f')
@@ -134,11 +191,12 @@ def validate(val_loader, model, criterion, args):
 
     # switch to evaluate mode
     model.eval()
+    device = get_device()
 
     with torch.no_grad():
         end = time.time()
         for i, (images, target) in enumerate(val_loader):
-            # target = target.to('cuda')
+            target = target.to(device)
 
             # compute output
             output = model(images)
@@ -160,7 +218,7 @@ def validate(val_loader, model, criterion, args):
         print(' * Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'
               .format(top1=top1, top5=top5))
 
-    return top1.avg
+    return top1.avg, top5.avg
 
 
 class AverageMeter(object):
