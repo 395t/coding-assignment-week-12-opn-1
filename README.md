@@ -37,9 +37,9 @@ This dataset consists of colour images of objects belonging to 101 classes.
 The topics relating to optimizers address different concerns and the hyperparameters of each approach are vastly different. Therefore, we have experiments for each idea and then some comparisons at the end.
 
 # MoCo
-I fine-tuned a pre-trained MoCo model on the three image classifiation dataset and compare it to a ResNet-50 model, randomly initialized and fine-tuned with the same data. The code is located in `notebooks/moco.ipynb`.
+We fine-tuned a pre-trained MoCo model on the three image classifiation dataset and compare it to a ResNet-50 model, randomly initialized and fine-tuned with the same data. The code is located in `notebooks/moco.ipynb`.
 
-I downloaded the pre-trained MoCo model from [the MoCo github](https://github.com/facebookresearch/moco). The weights are for a ResNet-50, which I added a linear layer with the corresponding classes size for each dataset to. According to the MoCo paper they trained for 200 epochs over the [ImageNet-1M](https://www.image-net.org) and [Instagram-1B](https://paperswithcode.com/dataset/ig-1b-targeted), which took ~6 days. As comparison, I also implemented a ResNet-50 with the same layers, but randomly initialized.
+We downloaded the pre-trained MoCo model from [the MoCo github](https://github.com/facebookresearch/moco). The weights are for a ResNet-50, which We added a linear layer with the corresponding classes size for each dataset to. According to the MoCo paper they trained for 200 epochs over the [ImageNet-1M](https://www.image-net.org) and [Instagram-1B](https://paperswithcode.com/dataset/ig-1b-targeted), which took ~6 days. As comparison, We also implemented a ResNet-50 with the same layers, but randomly initialized.
 
 Both models were trained using Adam optimizer, a learning rate of .0001, and cross entropy loss.
 
