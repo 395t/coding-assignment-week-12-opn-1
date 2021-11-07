@@ -37,33 +37,45 @@ This dataset consists of colour images of objects belonging to 101 classes.
 The topics relating to optimizers address different concerns and the hyperparameters of each approach are vastly different. Therefore, we have experiments for each idea and then some comparisons at the end.
 
 # MoCo
+I fine-tuned a pre-trained MoCo model on the three image classifiation dataset and compare it to a ResNet-50 model, randomly initialized and fine-tuned with the same data.
+
+I downloaded the pre-trained MoCo model from [the MoCo github](https://github.com/facebookresearch/moco). The weights are for a ResNet-50, which I added a linear layer with the corresponding classes size for each dataset to. As comparison, I also implemented a ResNet-50 with the same layers, but randomly initialized.
+
+Both models were trained using Adam optimizer, a learning rate of .0001, and cross entropy loss.
 
 ## CIFAR-10
 
-![loss](images/train_loss_cifar.png)
+![loss|50%](images/train_loss_cifar.png)
 
-![train](images/train_acc_cifar.png)
+![train|50%](images/train_acc_cifar.png)
 
-![test](images/test_acc_cifar.png)
+![test|50%](images/test_acc_cifar.png)
 
 ## Caltech-101
 
-![loss](images/train_loss_cal.png)
+![loss|50%](images/train_loss_cal.png)
 
-![train](images/train_acc_cal.png)
+![train|50%](images/train_acc_cal.png)
 
-![test](images/test_acc_cifar.png)
+![test|50%](images/test_acc_cifar.png)
 
 ## STL-10
 
-![loss](images/train_loss_cal.png)
+![loss|50%](images/train_loss_cal.png)
 
-![train](images/train_acc_cal.png)
+![train|50%](images/train_acc_cal.png)
 
-![test](images/test_acc_cal.png)
+![test|50%](images/test_acc_cal.png)
 
 ## Observations
 
+| Datasets/Model | MoCo | ResNet-50 |
+|---|---|---|---|---|
+| Cifar-10 | 87.42 | 73.72 |
+| Caltech-101 | 25.08 | 18.05 |
+| STL10 | 54.45 | 23.28 | 
+
+MoCo greatly outperforms ResNet-50 on all three datasets.
 # SimCLR
 
 # VirTex
@@ -76,9 +88,9 @@ The topics relating to optimizers address different concerns and the hyperparame
 
 | Datasets/Model | MoCo | SimCLR | VirTex | ConVIRT |
 |---|---|---|---|---|
-| Cifar-10 |  |  |  |   | 
-| Caltech-101 |  |  |  |  | 
-| STL10 |  |  |  |  |  
+| Cifar-10 | 87.42 |  |  |   | 
+| Caltech-101 | 25.08 |  |  |  | 
+| STL10 | 54.45 |  |  |  |  
 
 # References
 
