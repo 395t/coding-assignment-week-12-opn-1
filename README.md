@@ -38,6 +38,32 @@ The topics relating to optimizers address different concerns and the hyperparame
 
 # MoCo
 
+## CIFAR-10
+
+![loss](images/train_loss_cifar.png)
+
+![train](images/train_acc_cifar.png)
+
+![test](images/test_acc_cifar.png)
+
+## Caltech-101
+
+![loss](images/train_loss_cal.png)
+
+![train](images/train_acc_cal.png)
+
+![test](images/test_acc_cifar.png)
+
+## STL-10
+
+![loss](images/train_loss_cal.png)
+
+![train](images/train_acc_cal.png)
+
+![test](images/test_acc_cal.png)
+
+## Observations
+
 # SimCLR
 
 # VirTex
