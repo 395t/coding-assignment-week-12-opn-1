@@ -39,7 +39,7 @@ The topics relating to optimizers address different concerns and the hyperparame
 # MoCo
 I fine-tuned a pre-trained MoCo model on the three image classifiation dataset and compare it to a ResNet-50 model, randomly initialized and fine-tuned with the same data.
 
-I downloaded the pre-trained MoCo model from [the MoCo github](https://github.com/facebookresearch/moco). The weights are for a ResNet-50, which I added a linear layer with the corresponding classes size for each dataset to. As comparison, I also implemented a ResNet-50 with the same layers, but randomly initialized.
+I downloaded the pre-trained MoCo model from [the MoCo github](https://github.com/facebookresearch/moco). The weights are for a ResNet-50, which I added a linear layer with the corresponding classes size for each dataset to. According to the MoCo paper they trained for 200 epochs over the [ImageNet-1M](https://www.image-net.org) and [Instagram-1B](https://paperswithcode.com/dataset/ig-1b-targeted), which took ~6 days. As comparison, I also implemented a ResNet-50 with the same layers, but randomly initialized.
 
 Both models were trained using Adam optimizer, a learning rate of .0001, and cross entropy loss.
 
@@ -57,25 +57,35 @@ Both models were trained using Adam optimizer, a learning rate of .0001, and cro
 
 ![train|50%](images/train_acc_cal.png)
 
-![test|50%](images/test_acc_cifar.png)
+![test|50%](images/test_acc_cal.png)
 
 ## STL-10
 
-![loss|50%](images/train_loss_cal.png)
+![loss|50%](images/train_loss_stl.png)
 
-![train|50%](images/train_acc_cal.png)
+![train|50%](images/train_acc_stl.png)
 
-![test|50%](images/test_acc_cal.png)
+![test|50%](images/test_acc_stl.png)
 
 ## Observations
 
 | Datasets/Model | MoCo | ResNet-50 |
-|---|---|---|---|---|
-| Cifar-10 | 87.42 | 73.72 |
+|---|---|---|
+| CIFAR-10 | 87.42 | 73.72 |
 | Caltech-101 | 25.08 | 18.05 |
 | STL10 | 54.45 | 23.28 | 
 
-MoCo greatly outperforms ResNet-50 on all three datasets.
+MoCo greatly outperforms ResNet-50 on all three datasets. The pre-training done for MoCo Seems not only speed up convergence but also increase classification accuracy. This is most likely because it creates important pathways during the unsupervised training tasks that are not replicable through supervised training.
+
+For CIFAR-10 MoCo converges much faster and reaches a training accuracy of 87.42% compared to the randomly initialized ResNet-50 when was only able to obtain an accuracy of 73.72%. 
+
+While neither model preformed significantly well on the Caltech-101 dataset, MoCo was able to learn better on the small training set then ResNet-50. These models most likely did not perform well due to the limited size of the dataset.
+
+Training on the STL-10 dataset produced similar results to training on the Caltech dataset. There is a clear difference between the two models with MoCo performing better both accuracy and convergence rate wise. The limited size of the dataset is also the most likely culprit as to why the accuracies are so low.
+
+Using transfer learning increases the convergence rate and accuracy. This method does seem to require large amounts of compute resources since MoCo took ~6 days to pre-train on 64 GPUs, however when trained it has relatively fast fine-tuning time.
+
+
 # SimCLR
 
 # VirTex
@@ -88,7 +98,7 @@ MoCo greatly outperforms ResNet-50 on all three datasets.
 
 | Datasets/Model | MoCo | SimCLR | VirTex | ConVIRT |
 |---|---|---|---|---|
-| Cifar-10 | 87.42 |  |  |   | 
+| CIFAR-10 | 87.42 |  |  |   | 
 | Caltech-101 | 25.08 |  |  |  | 
 | STL10 | 54.45 |  |  |  |  
 
