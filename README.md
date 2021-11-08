@@ -106,6 +106,20 @@ All models were trained using cross-entropy loss and Adam optimizer with a learn
 ![train-stl](images/simclr/STL-10_default_acc_train.png) ![test-stl](images/simclr/STL-10_default_acc_val.png)
 
 # VirTex
+The VirTex paper uses a natural language caption associated with a particular image to help with representational learning behind images. They take captions and use the embeddings generated to do a pre-text task. They show that the weights learned by the resnet model can be transfered to downstream tasks leading to great performance increase.
+
+
+## CIFAR-10
+![acc-cifar-20epochs](images/VirTexCIFAR.png) 
+
+## Caltech-101
+
+![train-cal](images/VirTexCaltech101.png) 
+
+## STL-10
+![acc-cifar-20epochs](images/VirTexSTL10.png) 
+
+
 
 # ConVIRT
 The paper Contrastive Learning of Medical Visual Representations from Paired Images and Text has no official published code. A Pytorch implementation for ConVIRT is available at [here](https://github.com/edureisMD/ConVIRT-pytorch).
