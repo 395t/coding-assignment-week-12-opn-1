@@ -76,64 +76,82 @@ def main():
     # Data loading code
     train_loader, val_loader = get_dataloader(args.dataset, args.batch_size, DATA_DIR)
 
-    train_metrics = {}
-    val_metrics = {}
+    train_top1_metrics = {}
+    train_top5_metrics = {}
+    val_top1_metrics = {}
+    val_top5_metrics = {}
     for i in range(args.epochs):
         print(f'---- Epoch {i + 1} Training ----')
-        train_epoch_metrics = {}
-        val_epoch_metrics = {}
+        train_top1_epoch_metrics = {}
+        train_top5_epoch_metrics = {}
+        val_top1_epoch_metrics = {}
+        val_top5_epoch_metrics = {}
         top1, top5 = train(train_loader, model, criterion, args)
-        train_epoch_metrics['top1_acc'] = top1.item()
-        train_epoch_metrics['top5_acc'] = top5.item()
+        train_top1_epoch_metrics['acc'] = top1.item()
+        train_top5_epoch_metrics['acc'] = top5.item()
         print(f'---- Epoch {i + 1} Validation ----')
         top1, top5 = validate(val_loader, model, criterion, args)
-        val_epoch_metrics['top1_acc'] = top1.item()
-        val_epoch_metrics['top5_acc'] = top5.item()
+        val_top1_epoch_metrics['acc'] = top1.item()
+        val_top5_epoch_metrics['acc'] = top5.item()
 
         # update aggregate metrics
-        train_metrics[f'epoch_{i + 1}'] = train_epoch_metrics
-        val_metrics[f'epoch_{i + 1}'] = val_epoch_metrics
+        train_top1_metrics[f'epoch_{i + 1}'] = train_top1_epoch_metrics
+        train_top5_metrics[f'epoch_{i + 1}'] = train_top5_epoch_metrics
+        val_top1_metrics[f'epoch_{i + 1}'] = val_top1_epoch_metrics
+        val_top5_metrics[f'epoch_{i + 1}'] = val_top5_epoch_metrics
 
-    save_path = f'{args.dataset}_{args.exp_name}_train_metrics'
-    save_stats(train_metrics, save_path)
+    save_path = f'{args.dataset}_{args.exp_name}_train_top1_metrics'
+    save_stats(train_top1_metrics, save_path)
+    save_path = f'{args.dataset}_{args.exp_name}_train_top5_metrics'
+    save_stats(train_top5_metrics, save_path)
 
-    save_path = f'{args.dataset}_{args.exp_name}_val_metrics'
-    save_stats(val_metrics, save_path)
+    save_path = f'{args.dataset}_{args.exp_name}_val_top1_metrics'
+    save_stats(val_top1_metrics, save_path)
+    save_path = f'{args.dataset}_{args.exp_name}_val_top5_metrics'
+    save_stats(val_top5_metrics, save_path)
 
     # Models have run, lets plot the stats
     all_stats = []
     labels = []
-    load_path = f'{args.dataset}_{args.exp_name}_train_metrics'
+    load_path = f'{args.dataset}_{args.exp_name}_train_top1_metrics'
     all_stats.append(load_stats(load_path))
-    labels.append(f'{args.exp_name}')
+    labels.append('top1_acc')
+    load_path = f'{args.dataset}_{args.exp_name}_train_top5_metrics'
+    all_stats.append(load_stats(load_path))
+    labels.append('top5_acc')
 
-    for metric in ('top1_acc', 'top5_acc'):
+    # for metric in ('top1_acc', 'top5_acc'):
         # For every config, plot the loss across number of epochs
-        plt = compare_training_stats(all_stats, labels, metric_to_compare=metric, y_label=metric, title=f'{metric} vs Epoch (Train)')
-        save_plt(plt, f'{args.dataset}_{args.exp_name}_{metric}_train')
-        plt.clf()
+    metric = 'acc'
+    plt = compare_training_stats(all_stats, labels, metric_to_compare=metric, y_label=metric, title=f'{args.dataset} Accuracy vs Epoch (Train)')
+    save_plt(plt, f'{args.dataset}_{args.exp_name}_{metric}_train')
+    plt.clf()
 
     # plt validation stats
     all_stats = []
     labels = []
-    load_path = f'{args.dataset}_{args.exp_name}_val_metrics'
+    load_path = f'{args.dataset}_{args.exp_name}_val_top1_metrics'
     all_stats.append(load_stats(load_path))
-    labels.append(f'{args.exp_name}')
+    labels.append('top1_acc')
+    load_path = f'{args.dataset}_{args.exp_name}_val_top5_metrics'
+    all_stats.append(load_stats(load_path))
+    labels.append('top5_acc')
 
-    for metric in ('top1_acc', 'top5_acc'):
+    # for metric in ('top1_acc', 'top5_acc'):
         # For every config, plot the loss across number of epochs
-        plt = compare_training_stats(all_stats, labels, metric_to_compare=metric, y_label=metric, title=f'{metric} vs Epoch (Validation)')
-        save_plt(plt, f'{args.dataset}_{args.exp_name}_{metric}_val')
-        plt.clf()
+    metric = 'acc'
+    plt = compare_training_stats(all_stats, labels, metric_to_compare=metric, y_label=metric, title=f'{args.dataset} Accuracy vs Epoch (Validation)')
+    save_plt(plt, f'{args.dataset}_{args.exp_name}_{metric}_val')
+    plt.clf()
 
     # aggregate final epoch test accuracies across experiments and save
     test_acc = {}
     load_path = f'{args.dataset}_{args.exp_name}_val_metrics'
     stats = load_stats(load_path)
     exp = f'{args.dataset}_{args.exp_name}'
-    for metric in ('top1_acc', 'top5_acc'):
-        test_acc[f'{exp}_{metric}'] = stats[f'epoch_{args.epochs}'][metric]
-    save_stats(test_acc, f'{args.dataset}_{args.exp_name}_test_acc')
+    # for metric in ('top1_acc', 'top5_acc'):
+        # test_acc[f'{exp}_{metric}'] = stats[f'epoch_{args.epochs}'][metric]
+    # save_stats(test_acc, f'{args.dataset}_{args.exp_name}_test_acc')
 
 def train(train_loader, model, criterion, args):
     batch_time = AverageMeter('Time', ':6.3f')
