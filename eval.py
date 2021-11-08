@@ -30,7 +30,7 @@ parser = argparse.ArgumentParser(description='PyTorch Finetuning of SimCLR Check
 parser.add_argument('-a', '--arch', default='resnet50-1x')
 parser.add_argument('-e', '--epochs', default=20, type=int)
 parser.add_argument('--exp-name', default='default')
-parser.add_argument('-d', '--dataset', choices=('CIFAR-10', 'CIFAR-100', 'STL-10'), default='CIFAR-10')
+parser.add_argument('-d', '--dataset', choices=('Caltech-101', 'CIFAR-10', 'CIFAR-100', 'STL-10'), default='CIFAR-10')
 parser.add_argument('-j', '--workers', default=8, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
 parser.add_argument('-b', '--batch-size', default=256, type=int)
@@ -170,6 +170,8 @@ def train(train_loader, model, criterion, args):
 
     end = time.time()
     for i, (images, target) in enumerate(train_loader):
+        if i > 2:
+            break
         optim.zero_grad()
         target = target.to(device)
 
@@ -214,6 +216,8 @@ def validate(val_loader, model, criterion, args):
     with torch.no_grad():
         end = time.time()
         for i, (images, target) in enumerate(val_loader):
+            if i > 2:
+                break
             target = target.to(device)
 
             # compute output
