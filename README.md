@@ -95,21 +95,15 @@ All models were trained using cross-entropy loss and Adam optimizer with a learn
 
 ## CIFAR-10
 
-![train|50%](images/simclr/CIFAR-10_default_acc_train.png)
-
-![test|50%](images/simclr/CIFAR-10_default_acc_val.png)
+![train-cifar](images/simclr/CIFAR-10_default_acc_train.png) ![test-cifar](images/simclr/CIFAR-10_default_acc_val.png)
 
 ## Caltech-101
 
-![train|50%](images/simclr/CIFAR-100_default_acc_train.png)
-
-![test|50%](images/simclr/CIFAR-100_default_acc_val.png)
+![train-cal](images/simclr/CIFAR-100_default_acc_train.png) ![test-cal](images/simclr/CIFAR-100_default_acc_val.png)
 
 ## STL-10
 
-![train|50%](images/simclr/STL-10_default_acc_train.png)
-
-![test|50%](images/simclr/STL-10_default_acc_val.png)
+![train-stl](images/simclr/STL-10_default_acc_train.png) ![test-stl](images/simclr/STL-10_default_acc_val.png)
 
 # VirTex
 
