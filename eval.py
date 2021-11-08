@@ -120,8 +120,6 @@ def main():
     all_stats.append(load_stats(load_path))
     labels.append('top5_acc')
 
-    # for metric in ('top1_acc', 'top5_acc'):
-        # For every config, plot the loss across number of epochs
     metric = 'acc'
     plt = compare_training_stats(all_stats, labels, metric_to_compare=metric, y_label=metric, title=f'{args.dataset} Accuracy vs Epoch (Train)')
     save_plt(plt, f'{args.dataset}_{args.exp_name}_{metric}_train')
@@ -137,21 +135,11 @@ def main():
     all_stats.append(load_stats(load_path))
     labels.append('top5_acc')
 
-    # for metric in ('top1_acc', 'top5_acc'):
-        # For every config, plot the loss across number of epochs
     metric = 'acc'
     plt = compare_training_stats(all_stats, labels, metric_to_compare=metric, y_label=metric, title=f'{args.dataset} Accuracy vs Epoch (Validation)')
     save_plt(plt, f'{args.dataset}_{args.exp_name}_{metric}_val')
     plt.clf()
 
-    # aggregate final epoch test accuracies across experiments and save
-    test_acc = {}
-    load_path = f'{args.dataset}_{args.exp_name}_val_metrics'
-    stats = load_stats(load_path)
-    exp = f'{args.dataset}_{args.exp_name}'
-    # for metric in ('top1_acc', 'top5_acc'):
-        # test_acc[f'{exp}_{metric}'] = stats[f'epoch_{args.epochs}'][metric]
-    # save_stats(test_acc, f'{args.dataset}_{args.exp_name}_test_acc')
 
 def train(train_loader, model, criterion, args):
     batch_time = AverageMeter('Time', ':6.3f')
@@ -170,8 +158,6 @@ def train(train_loader, model, criterion, args):
 
     end = time.time()
     for i, (images, target) in enumerate(train_loader):
-        if i > 2:
-            break
         optim.zero_grad()
         target = target.to(device)
 
@@ -216,8 +202,6 @@ def validate(val_loader, model, criterion, args):
     with torch.no_grad():
         end = time.time()
         for i, (images, target) in enumerate(val_loader):
-            if i > 2:
-                break
             target = target.to(device)
 
             # compute output
