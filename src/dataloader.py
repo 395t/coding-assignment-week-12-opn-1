@@ -19,14 +19,20 @@ def get_dataloader(name, batch_size, storage_path):
             root=storage_path,
             download=True,
             transform=T.Compose([
-                #T.ToPILImage(),
                 T.Grayscale(num_output_channels=3),
                 T.Resize((224, 224)),
                 T.ToTensor()
             ])
         )
-        test_set = datasets.Caltech101(root=storage_path, download=True,
-                                      transform=T.ToTensor())
+        test_set = datasets.Caltech101(
+            root=storage_path,
+            download=True,
+            transform=T.Compose([
+                T.Grayscale(num_output_channels=3),
+                T.Resize((224, 224)),
+                T.ToTensor()
+            ])
+        )
     elif name == "STL-10":
         train_set = datasets.STL10(root=storage_path, split="train", download=True,
                                    transform=T.ToTensor())
