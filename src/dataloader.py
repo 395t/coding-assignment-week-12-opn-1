@@ -15,8 +15,16 @@ def get_dataloader(name, batch_size, storage_path):
         test_set = datasets.CIFAR100(root=storage_path, train=False, download=True,
                                       transform=T.ToTensor())
     elif name == "Caltech-101":
-        train_set = datasets.Caltech101(root=storage_path, download=True,
-                                      transform=T.ToTensor())
+        train_set = datasets.Caltech101(
+            root=storage_path,
+            download=True,
+            transform=T.Compose([
+                #T.ToPILImage(),
+                T.Grayscale(num_output_channels=3),
+                T.Resize((224, 224)),
+                T.ToTensor()
+            ])
+        )
         test_set = datasets.Caltech101(root=storage_path, download=True,
                                       transform=T.ToTensor())
     elif name == "STL-10":
