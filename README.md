@@ -86,6 +86,7 @@ Training on the STL-10 dataset produced similar results to training on the Calte
 Using transfer learning increases the convergence rate and accuracy. This method does seem to require large amounts of compute resources since MoCo took ~6 days to pre-train on 64 GPUs, however when trained it has relatively fast fine-tuning time.
 
 
+
 # SimCLR
 We fine-tuned a pre-trained SimCLR (v1) model on the three image classifiation dataset. The results can be replicated by running `python simclr.py -d DATASET`.
 
@@ -106,7 +107,7 @@ All models were trained using cross-entropy loss and Adam optimizer with a learn
 ![train-stl](images/simclr/STL-10_default_acc_train.png) ![test-stl](images/simclr/STL-10_default_acc_val.png)
 
 # VirTex
-The VirTex paper uses a natural language caption associated with a particular image to help with representational learning behind images. They take captions and use the embeddings generated to do a pre-text task. They show that the weights learned by the resnet model can be transfered to downstream tasks leading to great performance increase.
+The VirTex paper uses a natural language caption associated with a particular image to help with representational learning behind images. They take captions and use the embeddings generated to do a pre-text task. They show that the weights learned by the resnet model can be transfered to downstream tasks leading to great performance increase. While in the paper they test many downstream tasks, we use the representations for doing the downstream task of image classification.
 
 
 ## CIFAR-10
@@ -119,6 +120,15 @@ The VirTex paper uses a natural language caption associated with a particular im
 ## STL-10
 ![acc-cifar-20epochs](images/VirTexSTL10.png) 
 
+## Observations
+
+| Datasets/Model | VirTex | ResNet-50 |
+|---|---|---|
+| CIFAR-10 | 91.4 | 73.72 |
+| Caltech-101 | 24.8 | 18.05 |
+| STL10 | 57.4 | 23.28 |
+
+The pretrained model does better on the downstream task of image classification than the baseline ResNet50 model. The model converges faster than the earlier models. The test accuracy as well as the train accuracy has a large outperformance than the baseline. It is important to not that the model does better on particular domains. For example, it does much better in the domain of CIFAR-10 than the baseline as well as the other models. This might be because the pretraining task could allow the model to represent complex environments better. 
 
 
 # ConVIRT
@@ -155,9 +165,9 @@ The model was only trained for 2 epochs due to time constraints. Will attempt to
 
 | Datasets/Model | MoCo | SimCLR | VirTex | ConVIRT |
 |---|---|---|---|---|
-| CIFAR-10 | 87.42 | 82.26 |  | 63.23  |
-| Caltech-101 | 25.08 | 54.40  |  | - |
-| STL10 | 54.45 | 85.81 |  | 66.145 |
+| CIFAR-10 | 87.42 | 82.26 | 91.4 | 63.23  |
+| Caltech-101 | 25.08 | 54.40  | 24.8 | - |
+| STL10 | 54.45 | 85.81 | 57.4 | 66.145 |
 
 # References
 
