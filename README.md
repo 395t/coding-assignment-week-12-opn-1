@@ -116,11 +116,23 @@ A similar database was found, [CheXpert](https://stanfordmlgroup.github.io/compe
 
 
 ## CIFAR-10
-
+![acc-cifar-20epochs](images/ConVIRT-SimCLR-CIFAR10-20epochs.PNG) ![loss-cifar](images/ConVIRT-SimCLR-CIFAR10-20epochs-loss.PNG)
 ## STL-10
+![acc-stl-20epochs](images/ConVIRT-SimCLR-STL10-20epochs.PNG) ![loss-stl](images/ConVIRT-SimCLR-STL10-20epochs-loss.PNG)
+
+### 100 epochs run
+<img src="images/ConVIRT-SimCLR-CIFAR10.PNG" width="500" height="500"> <img src="images/ConVIRT-SimCLR-STL10.PNG" width="500" height="500">
 
 ## CheXpert
+Sample Data:
 
+![chexpert-data](images/cheXpert-sample-data.PNG)
+
+Training on 2 epochs:
+
+![chexpert-2epochs](images/cheXpert-results-2epochs.PNG)
+
+The model was only trained for 2 epochs due to time constraints. Will attempt to train for longer and update plot by Monday night.
 
 
 # Comparison
