@@ -108,6 +108,20 @@ All models were trained using cross-entropy loss and Adam optimizer with a learn
 # VirTex
 
 # ConVIRT
+The paper Contrastive Learning of Medical Visual Representations from Paired Images and Text has no official published code. A Pytorch implementation for ConVIRT is available at [here](https://github.com/edureisMD/ConVIRT-pytorch).
+
+The authors use the [MIMIC-CXR database](https://physionet.org/content/mimic-cxr/2.0.0/) for contrastive learning. This is a large database including X-Ray images from multiple patients, along text descriptions. Unfortunately the database requires approval which can take up to 4 weeks. 
+
+A similar database was found, [CheXpert](https://stanfordmlgroup.github.io/competitions/chexpert/), which was used to illustrate the pruposes of the original paper. The database consists of 224,316 chest radiographs of 65,240 patients.
+
+
+## CIFAR-10
+
+## STL-10
+
+## CheXpert
+
+
 
 # Comparison
 
@@ -115,9 +129,9 @@ All models were trained using cross-entropy loss and Adam optimizer with a learn
 
 | Datasets/Model | MoCo | SimCLR | VirTex | ConVIRT |
 |---|---|---|---|---|
-| CIFAR-10 | 87.42 | 82.26 |  |   |
-| Caltech-101 | 25.08 | 54.40  |  |  |
-| STL10 | 54.45 | 85.81 |  |  |
+| CIFAR-10 | 87.42 | 82.26 |  | 63.23  |
+| Caltech-101 | 25.08 | 54.40  |  | - |
+| STL10 | 54.45 | 85.81 |  | 66.145 |
 
 # References
 
@@ -129,4 +143,4 @@ All models were trained using cross-entropy loss and Adam optimizer with a learn
 
 [SimCLR pytorch converter](https://github.com/tonylins/simclr-converter)
 
-
+[ConVIRT repository](https://github.com/edureisMD/ConVIRT-pytorch) 
